@@ -1,0 +1,37 @@
+{
+  "minmax_cols": [
+    "anxiety_x_depression",
+    "is_sleep_deprived"
+  ],
+  "standard_cols": [
+    "study_hours_per_day",
+    "academic_performance",
+    "stress_level",
+    "anxiety_score",
+    "depression_score",
+    "sleep_hours",
+    "family_expectation",
+    "mental_health_index",
+    "mental_burden",
+    "study_sleep_ratio",
+    "mental_pressure_index"
+  ],
+  "sleep_thresh": 5.491047346861161,
+  "feature_order": [
+    "study_hours_per_day",
+    "academic_performance",
+    "stress_level",
+    "anxiety_score",
+    "depression_score",
+    "sleep_hours",
+    "family_expectation",
+    "mental_health_index",
+    "mental_burden",
+    "anxiety_x_depression",
+    "study_sleep_ratio",
+    "mental_pressure_index",
+    "is_sleep_deprived"
+  ],
+  "burnout_score_min": 0.0,
+  "burnout_score_max": 10.0
+}
