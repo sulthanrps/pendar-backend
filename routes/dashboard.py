@@ -20,8 +20,13 @@ def get_dashboard(current_user_id):
             .execute()
         
         scores = [row['burnout_level_pct'] for row in mind_checks_res.data]
-        avg_burnout = sum(scores) / len(scores) if scores else 0
-        mood_percentage = round(120 - avg_burnout)
+        if scores:
+            avg_burnout = sum(scores) / len(scores)
+            mood_percentage = round(120 - avg_burnout)
+            mood_label = "You're feeling good this week" if mood_percentage >= 70 else "Take time to rest this week"
+        else:
+            mood_percentage = 0
+            mood_label = "No data yet. Do your first Mind Check today!"
         
         journal_res = supabase.table('journals')\
             .select('id, created_at, content, mood_emoji')\
@@ -43,7 +48,7 @@ def get_dashboard(current_user_id):
                 "user_greeting": f"Good Morning, {user_name}",
                 "mood_journey": {
                     "percentage": mood_percentage,
-                    "label": "You're feeling good this week" if mood_percentage >= 70 else "Take time to rest this week"
+                    "label": mood_label
                 },
                 "recent_journal": journal_res.data[0] if journal_res.data else None,
                 "upcoming_priorities": schedule_res.data
