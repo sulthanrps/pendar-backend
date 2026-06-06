@@ -8,8 +8,24 @@ schedule_bp = Blueprint('schedule_bp', __name__)
 @token_required
 def get_schedules(current_user_id):
     try:
-        res = supabase.table('schedules').select('*').eq('user_id', current_user_id).order('deadline').execute()
-        return jsonify({"data": res.data}), 200
+        # 1. Ambil data dari Supabase (cukup order berdasarkan deadline saja dulu)
+        res = supabase.table('schedules')\
+            .select('*')\
+            .eq('user_id', current_user_id)\
+            .eq('is_completed', False)\
+            .execute()
+        
+        schedules = res.data
+        
+        # 2. Definisikan mapping prioritas agar bisa diurutkan secara numerik
+        priority_map = {"High": 1, "Medium": 2, "Low": 3}
+        
+        # 3. Sort di Python menggunakan dua kunci (priority_map dulu, baru deadline)
+        # x['priority'] diambil nilainya dari map, jika tidak ada (None) kasih nilai 4
+        schedules.sort(key=lambda x: (priority_map.get(x.get('priority'), 4), x.get('deadline')))
+        
+        return jsonify({"data": schedules}), 200
+        
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -38,6 +54,7 @@ def update_schedule(current_user_id, id):
     if "task_name" in data: update_data["task_name"] = data["task_name"]
     if "deadline" in data: update_data["deadline"] = data["deadline"]
     if "is_completed" in data: update_data["is_completed"] = data["is_completed"]
+    if "priority" in data: update_data["priority"] = data["priority"]
 
     try:
         res = supabase.table('schedules').update(update_data).eq('id', id).eq('user_id', current_user_id).execute()
