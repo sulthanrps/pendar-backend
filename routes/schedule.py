@@ -8,7 +8,6 @@ schedule_bp = Blueprint('schedule_bp', __name__)
 @token_required
 def get_schedules(current_user_id):
     try:
-        # 1. Ambil data dari Supabase (cukup order berdasarkan deadline saja dulu)
         res = supabase.table('schedules')\
             .select('*')\
             .eq('user_id', current_user_id)\
@@ -17,11 +16,8 @@ def get_schedules(current_user_id):
         
         schedules = res.data
         
-        # 2. Definisikan mapping prioritas agar bisa diurutkan secara numerik
         priority_map = {"High": 1, "Medium": 2, "Low": 3}
         
-        # 3. Sort di Python menggunakan dua kunci (priority_map dulu, baru deadline)
-        # x['priority'] diambil nilainya dari map, jika tidak ada (None) kasih nilai 4
         schedules.sort(key=lambda x: (priority_map.get(x.get('priority'), 4), x.get('deadline')))
         
         return jsonify({"data": schedules}), 200

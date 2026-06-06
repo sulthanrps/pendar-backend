@@ -4,7 +4,7 @@ Backend API untuk aplikasi **Pendar** (Productivity & Mental Well-being). Dibang
 
 ## 🚀 Base URL
 - **Local:** `http://127.0.0.1:5000`
-- **Production:** `To Be Written (nunggu deploy)`
+- **Production:** `https://pendar-backend-production.up.railway.app`
 
 ## 🔐 Autentikasi (Penting untuk Frontend)
 Semua *endpoint* **kecuali Auth (Login/Register)** wajib menyertakan token JWT di dalam *Headers*. Token ini didapatkan setelah *user* berhasil *Login*.
