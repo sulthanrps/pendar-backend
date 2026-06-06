@@ -4,7 +4,7 @@ from utils.auth_middleware import token_required
 
 profile_bp = Blueprint('profile_bp', __name__)
 
-@profile_bp.route('/', methods=['GET'])
+@profile_bp.route('', methods=['GET'])
 @token_required
 def get_profile(current_user_id):
     try:
@@ -16,7 +16,7 @@ def get_profile(current_user_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@profile_bp.route('/', methods=['PUT'])
+@profile_bp.route('', methods=['PUT'])
 @token_required
 def update_profile(current_user_id):
     data = request.json

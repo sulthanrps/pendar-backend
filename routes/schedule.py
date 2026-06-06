@@ -4,7 +4,7 @@ from utils.auth_middleware import token_required
 
 schedule_bp = Blueprint('schedule_bp', __name__)
 
-@schedule_bp.route('/', methods=['GET'])
+@schedule_bp.route('', methods=['GET'])
 @token_required
 def get_schedules(current_user_id):
     try:
@@ -13,7 +13,7 @@ def get_schedules(current_user_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@schedule_bp.route('/', methods=['POST'])
+@schedule_bp.route('', methods=['POST'])
 @token_required
 def add_schedule(current_user_id):
     data = request.json

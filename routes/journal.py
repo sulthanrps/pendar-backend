@@ -4,7 +4,7 @@ from utils.auth_middleware import token_required
 
 journal_bp = Blueprint('journal_bp', __name__)
 
-@journal_bp.route('/', methods=['GET'])
+@journal_bp.route('', methods=['GET'])
 @token_required
 def get_journals(current_user_id):
     try:
@@ -13,7 +13,7 @@ def get_journals(current_user_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@journal_bp.route('/', methods=['POST'])
+@journal_bp.route('', methods=['POST'])
 @token_required
 def add_journal(current_user_id):
     data = request.json
@@ -50,10 +50,8 @@ def update_journal(current_user_id, id):
 @token_required
 def delete_journal(current_user_id, id):
     try:
-        # Hapus jurnal berdasarkan ID jurnal DAN User ID yang sedang login
         res = supabase.table('journals').delete().eq('id', id).eq('user_id', current_user_id).execute()
         
-        # Jika res.data kosong, berarti data tidak ada atau bukan milik user tersebut
         if not res.data:
             return jsonify({"error": "Jurnal tidak ditemukan atau Anda tidak memiliki akses!"}), 404
             
