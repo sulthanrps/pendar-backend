@@ -12,7 +12,7 @@ MM_SCALER_PATH = os.path.join(MODEL_DIR, "mm_scaler.pkl")
 STD_SCALER_PATH = os.path.join(MODEL_DIR, "std_scaler.pkl")
 META_PATH = os.path.join(MODEL_DIR, "pipeline_meta.json")
 
-BURNOUT_THRESHOLD_PCT = 70
+BURNOUT_THRESHOLD_PCT = 60
 
 class MindCheckPredictor:
     """
@@ -115,22 +115,16 @@ class MindCheckPredictor:
           - Derived features (mental_burden, ratio, index, dll.)
           - is_sleep_deprived (menggunakan sleep_thresh dari training)
         """
-        # Map nama field Flutter ke nama kolom di dataset training
-        # Sesuaikan mapping ini jika nama kolom di notebook berbeda
         base = {
             "stress_level":        raw["stress_score"],
             "anxiety_score":       raw["anxiety_score"],
             "depression_score":    raw["depression_score"],
             "sleep_hours":         raw["sleep_hours"],
             "study_hours_per_day": raw["study_hours"],
-            # mental_health_index tidak ada di dataset asli —
-            # kita jadikan fitur tambahan jika ada di feature_order,
-            # atau abaikan jika tidak.
         }
  
         df = pd.DataFrame([base])
  
-        # ── Derived features (harus identik dengan notebook) ──────────────────
         df["mental_burden"] = df["anxiety_score"] + df["depression_score"]
         df["anxiety_x_depression"] = df["anxiety_score"] * df["depression_score"]
         df["study_sleep_ratio"] = df["study_hours_per_day"] / (df["sleep_hours"] + 1e-5)
@@ -138,13 +132,11 @@ class MindCheckPredictor:
             ["stress_level", "anxiety_score", "depression_score"]
         ].mean(axis=1)
  
-        # ── is_sleep_deprived (gunakan threshold dari training, BUKAN recompute) ─
         df["is_sleep_deprived"] = (df["sleep_hours"] < self.sleep_thresh).astype(int)
 
         df["academic_performance"] = 0.0
         df["family_expectation"]   = 0.0
  
-        # ── Tambahkan mental_health_index hanya jika ada di feature_order ───────
         if "mental_health_index" in self.feature_order:
             df["mental_health_index"] = raw["mental_health_index"]
  
@@ -157,7 +149,6 @@ class MindCheckPredictor:
         """
         df = df.copy()
  
-        # Filter hanya kolom yang ada di DataFrame (hindari KeyError)
         mm_apply = [c for c in self.minmax_cols if c in df.columns]
         std_apply = [c for c in self.standard_cols if c in df.columns]
  
